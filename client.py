@@ -1,14 +1,11 @@
 ﻿from telethon.sync import TelegramClient
 import database as db
+import config
 import asyncio
 
-api_id = 12224795
-api_hash = '5cfd4052ea870de4ce94862b360d541a'
-
 """ data['alarm_level] - Рівень тривоги | 0:нема, 1:схід, 2:вся Україна """
-
 data = db.get_data()
-client = TelegramClient('session', api_id, api_hash)
+client = TelegramClient('session', config.CLIENT_API_ID, config.CLIENT_API_HASH)
 
 async def update_last(value:dict):
     db.update_data(value)
@@ -66,7 +63,7 @@ async def get_updates():
 # Шоб ввійти в акаунт
 # import asyncio
 # async def main():
-#     client = TelegramClient('session', api_id, api_hash)
+#     client = TelegramClient('session', config.CLIENT_API_ID, config.CLIENT_API_HASH)
 #     await client.connect()
 #     # await client.start(phone_number, '<password>')
 #     async for message in client.iter_messages('war_monitor', limit=1):
