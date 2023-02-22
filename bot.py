@@ -1,4 +1,9 @@
-﻿from aiogram import Bot, Dispatcher, executor, types
+﻿# Це для того, щоби бот працював у streamlit.io
+import asyncio
+_loop_ = asyncio.new_event_loop()
+asyncio.set_event_loop(_loop_)
+
+from aiogram import Bot, Dispatcher, executor, types
 import asyncio
 
 import database as db
@@ -8,10 +13,6 @@ import client
 import logging
 logging.basicConfig(level=logging.WARNING)
 
-# Це для того, щоби бот працював у streamlit.io
-import asyncio
-_loop_ = asyncio.new_event_loop()
-asyncio.set_event_loop(_loop_)
 
 # Load bot
 bot = Bot(token=config.API_KEY)
