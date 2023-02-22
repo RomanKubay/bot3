@@ -3,7 +3,7 @@ import database as db
 import config
 import asyncio
 
-""" data['alarm_level] - Рівень тривоги | 0:нема, 1:схід, 2:вся Україна """
+""" data['alarm_level'] - Рівень тривоги | 0:нема, 1:схід, 2:вся Україна """
 data = db.get_data()
 client = TelegramClient('session', config.CLIENT_API_ID, config.CLIENT_API_HASH)
 

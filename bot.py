@@ -35,7 +35,7 @@ async def unsubscribe_command(message: types.Message):
 @dp.message_handler(commands=['admin'], commands_prefix='!/')
 async def admin_command(message: types.Message):
     if message.from_id == 1041234545:
-        await message.answer('Команди для розробника (це мені):\n\n → /stopbot - Зупиняє бота;\n → /runid - Дізнатись runid бота;')
+        await message.answer('Команди для розробника (це мені):\n\n → /stopbot - Зупиняє бота;\n → /runid - Дізнатись runid бота;\n → /level - Рівень тривоги;')
 
 @dp.message_handler(commands=['stopbot'], commands_prefix='!/')
 async def stop_bot_command(message: types.Message):
@@ -47,6 +47,11 @@ async def stop_bot_command(message: types.Message):
 async def runid_command(message: types.Message):
     if message.from_id == 1041234545:
         await message.answer(str(db.runid))
+
+@dp.message_handler(commands=['level'], commands_prefix='!/')
+async def level_command(message: types.Message):
+    if message.from_id == 1041234545:
+        await message.answer(f"{client.data['alarm_level']} → {['Все спокійно', 'Тривога лише на сході', 'Тривога по всій Україні'][client.data['alarm_level']]}")
 
 
 async def updates_loop():
