@@ -21,7 +21,7 @@ async def get_updates():
             data['alarm_level'] = 2
             asyncio.create_task(update_last(data))
             return '🚨 <b>Тривога по всій Україні!</b>\n → Зліт МіГ-31К ВПС рф - @war_monitor', True
-        elif 'Загроза застосування наземних пускових' in msg.text:
+        elif 'Загроза застосування наземних пускових' in msg.text or 'Запуск ракет ЗРК С-300' in msg.text:
             data['war_monitor'] = msg.id
             data['alarm_level'] = 1
             asyncio.create_task(update_last(data))
