@@ -8,7 +8,7 @@ API_KEY = '6206166136:AAG4JbHPHz0Fcx15zZdeVLZH9xFtm8DKpuU'
 MONGODB_HOST = 'mongodb+srv://RomanKubay:7iunrPEfsDm8UAS8@cluster.myvigzq.mongodb.net/?retryWrites=true&w=majority'
 CLIENT_API_ID = 12224795
 CLIENT_API_HASH = '5cfd4052ea870de4ce94862b360d541a'
-CHECK_DELAY = 8
+CHECK_DELAY = 11
 
 regions = [
     'Вінницька обл.',        'Вознесенська ТГ',

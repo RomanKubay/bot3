@@ -72,11 +72,10 @@ async def get_channel_updates():
 # print(asyncio.run(get_updates()))
 
 # Шоб ввійти в акаунт
-# import asyncio
 # async def main():
 #     client = TelegramClient('session', config.CLIENT_API_ID, config.CLIENT_API_HASH)
 #     await client.connect()
-#     # await client.start(phone_number, '<password>')
+#     await client.start('phone_number', '<password>')
 #     async for message in client.iter_messages('war_monitor', limit=1):
 #         print(message.sender_id, ':', message.text)
 # asyncio.run(main())

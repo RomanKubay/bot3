@@ -70,7 +70,7 @@ async def callback(call: types.CallbackQuery):
 async def admin_command(message: types.Message):
     if message.from_id == 1041234545:
         await message.delete()
-        await message.answer('Команди для розробника (це мені):\n\n → lastchange (канал) (скіко відняти) - Змінити id останнього повідомлення;\n → /stopbot - Зупиняє бота;\n → /runid - Дізнатись runid бота;\n → /level - Рівень тривоги;', reply_markup=close_kb)
+        await message.answer('Команди для розробника (це мені):\n\n → !lastchange (канал) (скіко відняти) - Змінити id останнього повідомлення;\n → /stopbot - Зупиняє бота;\n → /runid - Дізнатись runid бота;\n → /level - Рівень тривоги;', reply_markup=close_kb)
 
 @dp.message_handler(commands=['stopbot'], commands_prefix='!/')
 async def stop_bot_command(message: types.Message):
@@ -95,10 +95,15 @@ async def level_command(message: types.Message):
 async def lastchange_command(message: types.Message):
     if message.from_id == 1041234545:
         await message.delete()
-        args = message.get_args().split(' ', 1)
-        if len(args) == 2 and args[0] in client.data:
-            client.data[args[0]] -= int(args[1])
-            await message.answer(f'Змінено! тепер id ост. повідомлення каналу {args[0]} - {args[1]}', reply_markup=close_kb)
+        args = message.get_args()
+        if args is not None:
+            args = args.split(' ', 1)
+            print(args, client.data, args[0] in client.data)
+            if len(args) == 2 and args[0] in client.data:
+                client.data[args[0]] -= int(args[1])
+                await message.answer(f'Змінено! тепер id ост. повідомлення каналу {args[0]} - {args[1]}', reply_markup=close_kb)
+            else:
+                await message.answer('пиши полюцки', reply_markup=close_kb)
         else:
             await message.answer('пиши полюцки', reply_markup=close_kb)
 
