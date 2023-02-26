@@ -11,8 +11,8 @@ import database as db
 import config
 import client
 
-import logging
-logging.basicConfig(level=logging.WARNING)
+# import logging
+# logging.basicConfig(level=logging.WARNING)
 
 # Load bot
 bot = Bot(token=config.API_KEY)
