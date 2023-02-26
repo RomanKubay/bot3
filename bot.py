@@ -11,12 +11,13 @@ import database as db
 import config
 import client
 
-# import logging
-# logging.basicConfig(level=logging.WARNING)
+import logging
+logging.basicConfig(level=logging.WARNING)
 
 # Load bot
 bot = Bot(token=config.API_KEY)
 dp = Dispatcher(bot)
+close_kb = InlineKeyboardMarkup(inline_keyboard=[[InlineKeyboardButton('❌ Закрити', callback_data="close")]])
 
 @dp.message_handler(commands=['start'], commands_prefix='!/')
 async def start_command(message: types.Message):
@@ -68,23 +69,27 @@ async def callback(call: types.CallbackQuery):
 @dp.message_handler(commands=['admin'], commands_prefix='!/')
 async def admin_command(message: types.Message):
     if message.from_id == 1041234545:
-        await message.answer('Команди для розробника (це мені):\n\n → /stopbot - Зупиняє бота;\n → /runid - Дізнатись runid бота;\n → /level - Рівень тривоги;')
+        await message.delete()
+        await message.answer('Команди для розробника (це мені):\n\n → /stopbot - Зупиняє бота;\n → /runid - Дізнатись runid бота;\n → /level - Рівень тривоги;', reply_markup=close_kb)
 
 @dp.message_handler(commands=['stopbot'], commands_prefix='!/')
 async def stop_bot_command(message: types.Message):
     if message.from_id != 1041234545: return
-    await message.answer("Зупиняю бота...")
+    await message.delete()
+    await message.answer("Зупиняю бота...", reply_markup=close_kb)
     _loop_.stop()
 
 @dp.message_handler(commands=['runid'], commands_prefix='!/')
 async def runid_command(message: types.Message):
     if message.from_id == 1041234545:
-        await message.answer(str(db.runid))
+        await message.delete()
+        await message.answer(str(db.runid), reply_markup=close_kb)
 
 @dp.message_handler(commands=['level'], commands_prefix='!/')
 async def level_command(message: types.Message):
     if message.from_id == 1041234545:
-        await message.answer(f"{client.data['alarm_level']} → {['Все спокійно', 'Тривога лише на сході', 'Тривога по всій Україні'][client.data['alarm_level']]}")
+        await message.delete()
+        await message.answer(f"{client.data['alarm_level']} → {['Все спокійно', 'Тривога по всій Україні'][client.data['alarm_level']]}", reply_markup=close_kb)
 
 
 async def updates_loop():
@@ -99,7 +104,10 @@ async def updates_loop():
         
         # Повітряні тривоги
         for a in alarms:
-            text = [f"🚨 Повітряна тривога в {config.regions[a[0]]}!", f"🟢 Відбій тривоги в {config.regions[a[0]]}!", f"🚨 Загроза артобстрілу в {config.regions[a[0]]}!", f"🟢 Відбій загрози артобстрілу в {config.regions[a[0]]}!"][a[1]]
+            text = [f"🚨 Повітряна тривога у {config.regions[a[0]]}!", f"🟢 Відбій тривоги у {config.regions[a[0]]}!", f"🚨 Загроза артобстрілу у {config.regions[a[0]]}!", f"🟢 Відбій загрози артобстрілу у {config.regions[a[0]]}!"][a[1]]
+            # print(text)
+            # print(db.userlist)
+            # print(config.regions[a[0]])
             for u in db.users_by_region(a[0]): await bot.send_message(u, text)
 
         await asyncio.sleep(config.CHECK_DELAY)

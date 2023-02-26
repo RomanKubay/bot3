@@ -41,9 +41,9 @@ async def get_channel_updates():
 
     # Повітряні тривоги
     alarms = []
-    first = False
+    lmid = None
     async for msg in client.iter_messages('air_alert_ua', limit=30):
-        if not first: first = True; data['alert'] = msg.id; asyncio.create_task(update_last(data))
+        if lmid is None: lmid = msg.id; 
         if msg.id == data['alert']: break
 
         text = msg.text
@@ -55,10 +55,13 @@ async def get_channel_updates():
         elif 'Відбій за' in text: t = 3 # Відбій загрози артобстрілу
         else: t = 4 # Шось відбувається невідоме
 
-        async for i in range(len(config.regions_short)):
+        for i in range(len(config.regions_short)):
             if config.regions_short[i] in text:
                 alarms.append((i, t))
                 break
+    if lmid is not None:
+        data['alert'] = lmid
+        asyncio.create_task(update_last(data))
 
 
     # If no updates, return None

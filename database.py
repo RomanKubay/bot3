@@ -17,13 +17,13 @@ time.sleep(6)
 print("Підключено до MongoDB")
 
 def new_user(id:int, reg:int):
-    if get_user_i(id) != None: return
+    if get_user_i(id) is not None: return
     db.insert_one({'_id': id, 'region': reg})
     userlist.append([id, reg])
 
 def change_region(id:int, reg:int):
     i = get_user_i(id)
-    if i != None: return
+    if i is None: return
     userlist[i][1] = reg
     db.update_one({'_id': id}, {'$set': {'region': reg}})
 
@@ -33,7 +33,10 @@ def remove_user(id:int):
         if userlist[u][0] == id: userlist.pop(u); return
 
 def users_by_region(reg:int):
-    return [u[0] for u in userlist if u[1] == reg]
+    # for u in userlist: print(u[1], reg, u[1] == reg)
+    print('Search users by region', reg)
+    lst = [u[0] for u in userlist if u[1] == reg]
+    return lst
 
 def get_user_i(id:int):
     for u in range(len(userlist)): 
