@@ -115,7 +115,8 @@ async def updates_loop():
 
         # Повідомлення з каналів
         if ch != None:
-            for u in db.userlist: await bot.send_message(u, ch, 'HTML')
+            for u in db.userlist:
+                await bot.send_message(u[0], ch, 'HTML')
         
         # Повітряні тривоги
         for a in alarms:
@@ -123,7 +124,8 @@ async def updates_loop():
             # print(text)
             # print(db.userlist)
             # print(config.regions[a[0]])
-            for u in db.users_by_region(a[0]): await bot.send_message(u, text)
+            for u in db.users_by_region(a[0]):
+                await bot.send_message(u, text)
 
         await asyncio.sleep(config.CHECK_DELAY)
 _loop_.create_task(updates_loop())
