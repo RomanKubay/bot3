@@ -73,7 +73,6 @@ async def updates_loop():
 
         if ch is not None: CHANNELS.append(ch); print(ch)
         for a in alarms: ALARMS.append(a); print(a)
-        print('client.py →', ALARMS)
         await asyncio.sleep(config.CHECK_DELAY)
 _loop_.create_task(updates_loop())
 

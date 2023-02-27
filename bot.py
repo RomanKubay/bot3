@@ -103,7 +103,6 @@ async def updates_loop():
     await asyncio.sleep(2)
     print("Починаю стежити за оновленями")
     while True:
-
         # Повідомлення з каналів
         l = len(client.CHANNELS)
         if l != 0:
