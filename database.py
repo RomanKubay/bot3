@@ -12,8 +12,8 @@ db.update_one({'_id': 0}, {'$inc': {'runid': 1}})
 def get_runid():
     return db.find_one({'_id': 0})['runid']
 runid = get_runid()
-print("Чекаємо 6 секунд")
-time.sleep(6)
+print("Чекаємо 5 секунд")
+time.sleep(5.2)
 print("Підключено до MongoDB")
 
 def new_user(id:int, reg:int):

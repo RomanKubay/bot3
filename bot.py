@@ -70,7 +70,7 @@ async def callback(call: types.CallbackQuery):
 async def admin_command(message: types.Message):
     if message.from_id == 1041234545:
         await message.delete()
-        await message.answer('Команди для розробника (це мені):\n\n → !lastchange (канал) (скіко відняти) - Змінити id останнього повідомлення;\n → /stopbot - Зупиняє бота;\n → /runid - Дізнатись runid бота;\n → /level - Рівень тривоги;', reply_markup=close_kb)
+        await message.answer('Команди для розробника (це мені):\n\n → !lastchange (канал) (скіко відняти) - Змінити id останнього повідомлення\nПриклад: !lastchange alert 3;\n → /stopbot - Зупинити бота;\n → /info - Отримати якусь інформацію;', reply_markup=close_kb)
 
 @dp.message_handler(commands=['stopbot'], commands_prefix='!/')
 async def stop_bot_command(message: types.Message):
@@ -78,54 +78,51 @@ async def stop_bot_command(message: types.Message):
     await message.delete()
     await message.answer("Зупиняю бота...", reply_markup=close_kb)
     _loop_.stop()
+    client._loop_.stop()
 
-@dp.message_handler(commands=['runid'], commands_prefix='!/')
-async def runid_command(message: types.Message):
+@dp.message_handler(commands=['info'], commands_prefix='!/')
+async def info_command(message: types.Message):
     if message.from_id == 1041234545:
         await message.delete()
-        await message.answer(str(db.runid), reply_markup=close_kb)
-
-@dp.message_handler(commands=['level'], commands_prefix='!/')
-async def level_command(message: types.Message):
-    if message.from_id == 1041234545:
-        await message.delete()
-        await message.answer(f"{client.data['alarm_level']} → {['Все спокійно', 'Тривога по всій Україні'][client.data['alarm_level']]}", reply_markup=close_kb)
+        await message.answer(f' → Userlist:\n{db.userlist}\n\n → client data:\n{client.data}\n\n → runid - {db.runid}', reply_markup=close_kb)
 
 @dp.message_handler(commands=['lastchange'], commands_prefix='!/')
 async def lastchange_command(message: types.Message):
     if message.from_id == 1041234545:
         await message.delete()
-        args = message.get_args()
-        if args is not None:
-            args = args.split(' ', 1)
-            print(args, client.data, args[0] in client.data)
-            if len(args) == 2 and args[0] in client.data:
-                client.data[args[0]] -= int(args[1])
-                await message.answer(f'Змінено! тепер id ост. повідомлення каналу {args[0]} - {args[1]}', reply_markup=close_kb)
-            else:
-                await message.answer('пиши полюцки', reply_markup=close_kb)
+        args = message.text.split(' ', 2)
+        if len(args) == 3 and args[1] in client.data:
+            # print(args, client.data, args[0] in client.data)
+            client.data[args[1]] -= int(args[2])
+            await message.answer(f'Змінено! Тепер id ост. повідомлення каналу {args[1]} - {client.data[args[1]]}', reply_markup=close_kb)
         else:
+            print(f'lastchange error: len(args) == {len(args)} ({len(args) == 3}) and args[1] in client.data - {args[1] in client.data}')
             await message.answer('пиши полюцки', reply_markup=close_kb)
 
 async def updates_loop():
     await asyncio.sleep(2)
     print("Починаю стежити за оновленями")
     while True:
-        ch, alarms = await client.get_channel_updates()
 
         # Повідомлення з каналів
-        if ch != None:
-            for u in db.userlist:
-                await bot.send_message(u[0], ch, 'HTML')
+        l = len(client.CHANNELS)
+        if l != 0:
+            for msgid in range(l-1, -1, -1):
+                for u in db.userlist:
+                    await bot.send_message(u[0], client.CHANNELS[msgid], 'HTML')
+                client.CHANNELS.pop(msgid)
         
         # Повітряні тривоги
-        for a in alarms:
-            text = [f"🚨 Повітряна тривога у {config.regions[a[0]]}!", f"🟢 Відбій тривоги у {config.regions[a[0]]}!", f"🚨 Загроза артобстрілу у {config.regions[a[0]]}!", f"🟢 Відбій загрози артобстрілу у {config.regions[a[0]]}!"][a[1]]
-            # print(text)
-            # print(db.userlist)
-            # print(config.regions[a[0]])
-            for u in db.users_by_region(a[0]):
-                await bot.send_message(u, text)
+        l = len(client.ALARMS)
+        if l != 0:
+            print('alarms -', l)
+            for aid in range(l-1, -1, -1):
+                a = client.ALARMS[aid]
+                text = [f"🚨 Повітряна тривога у {config.regions[a[0]]}!", f"🟢 Відбій тривоги у {config.regions[a[0]]}!", f"🚨 Загроза артобстрілу у {config.regions[a[0]]}!", f"🟢 Відбій загрози артобстрілу у {config.regions[a[0]]}!"][a[1]]
+                # print(text, db.users_by_region(a[0]))
+                for u in db.users_by_region(a[0]):
+                    await bot.send_message(u, text)
+                client.ALARMS.pop(aid)
 
         await asyncio.sleep(config.CHECK_DELAY)
 _loop_.create_task(updates_loop())
@@ -134,8 +131,9 @@ async def check_another_run_loop():
     while True:
         if db.runid != db.get_runid():
             _loop_.stop()
+            client._loop_.stop()
             break
-        await asyncio.sleep(6)
+        await asyncio.sleep(4.8)
 _loop_.create_task(check_another_run_loop()) 
 
 if __name__ == "__main__":
