@@ -64,6 +64,7 @@ async def updates_loop():
 
             for i in range(len(config.regions_short)):
                 if config.regions_short[i] in text:
+                    print((i, t))
                     alarms.append((i, t))
                     break
         if lmid is not None:
