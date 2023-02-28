@@ -2,7 +2,7 @@
 import asyncio
 _loop_ = asyncio.new_event_loop()
 asyncio.set_event_loop(_loop_)
-
+print(input('ввести дані'))
 from aiogram import Bot, Dispatcher, executor, types
 from aiogram.types import InlineKeyboardButton, InlineKeyboardMarkup
 import asyncio
