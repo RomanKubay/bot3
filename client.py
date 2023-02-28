@@ -28,7 +28,7 @@ async def updates_loop():
                 data['alarm_level'] = 1
                 asyncio.create_task(update_last(data))
                 ch = '🚨 <b>Тривога по всій Україні!</b>\n → <i>Зліт МіГ-31К ВПС рф</i> - @war_monitor'
-            elif 'Відбій по областях' in msg.text:
+            elif 'Відбій по областях' in msg.text and data['alarm_level'] == 1:
                 data['war_monitor'] = msg.id
                 data['alarm_level'] = 0
                 asyncio.create_task(update_last(data))
