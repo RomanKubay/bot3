@@ -27,7 +27,7 @@ async def updates_loop():
                 data['war_monitor'] = msg.id
                 data['alarm_level'] = 1
                 asyncio.create_task(update_last(data))
-                ch = '🚨 <b>Тривога по всій Україні!</b>\n → <i>Зліт МіГ-31К ВПС рф</i> - @war_monitor'
+                ch = '🚨 <b>Зараз тривога по всій Україні!</b>\n → <i>Зліт МіГ-31К ВПС рф</i> - @war_monitor'
             elif 'Відбій по областях' in msg.text and data['alarm_level'] == 1:
                 data['war_monitor'] = msg.id
                 data['alarm_level'] = 0
@@ -40,11 +40,15 @@ async def updates_loop():
             if 'Взлёт МиГ' in msg.text:
                 data['Hajun_BY'] = msg.id
                 asyncio.create_task(update_last(data))
-                ch = '❗️ <b>Скоро буде тривога по всій Україні!</b>\n → <i>Зліт МіГ-31К ВПС рф над територією білорусі</i> - @Hajun_BY'
+                ch = '❗️ <b>Тривога по всій Україні через 5-10хв!</b>\n → <i>Зліт МіГ-31К ВПС рф над територією білорусі</i> - @Hajun_BY'
+            elif 'Взлёт ДРЛО' in msg.text:
+                data['Hajun_BY'] = msg.id
+                asyncio.create_task(update_last(data))
+                ch = '❕ <b>Скоро може бути тривога по всій Україні.</b>\n → <i>Зліт ДРЛВ А-50У</i> - @Hajun_BY\n\nЗазвичай через 5-30 хв. після цього злітає МіГ-31К, але не завжди.'
             elif 'Посадка ДРЛО' in msg.text:
                 data['Hajun_BY'] = msg.id
                 asyncio.create_task(update_last(data))
-                ch = '❓ <b>Скоро буде відбій тривог?</b>\n → <i>Посадка ДРЛО А-50У ВКС рф</i> - @Hajun_BY'
+                ch = '❓ <b>Скоро буде відбій тривог?</b>\n → <i>Посадка ДРЛО А-50У</i> - @Hajun_BY'
 
         # Повітряні тривоги
         alarms = []
@@ -75,12 +79,3 @@ async def updates_loop():
         for a in alarms: ALARMS.append(a); print(a)
         await asyncio.sleep(config.CHECK_DELAY)
 _loop_.create_task(updates_loop())
-
-# Шоб ввійти в акаунт
-# async def main():
-#     client = TelegramClient('session', config.CLIENT_API_ID, config.CLIENT_API_HASH)
-#     await client.connect()
-#     await client.start('phone_number', '<password>')
-#     async for message in client.iter_messages('war_monitor', limit=1):
-#         print(message.sender_id, ':', message.text)
-# asyncio.run(main())

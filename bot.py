@@ -117,7 +117,7 @@ async def updates_loop():
             print('alarms -', l)
             for aid in range(l-1, -1, -1):
                 a = client.ALARMS[aid]
-                text = [f"🚨 Повітряна тривога у {config.regions[a[0]]}!", f"🟢 Відбій тривоги у {config.regions[a[0]]}!", f"🚨 Загроза артобстрілу у {config.regions[a[0]]}!", f"🟢 Відбій загрози артобстрілу у {config.regions[a[0]]}!"][a[1]]
+                text = [f"🚨 Повітряна тривога у {config.regions[a[0]]}!", f"🟢 Відбій тривоги у {config.regions[a[0]]}!", f"🚨 Загроза артобстрілу у {config.regions[a[0]]}!", f"🟢 Відбій загрози артобстрілу у {config.regions[a[0]]}!", f"🔴 У {config.regions[a[0]]} щось відбувається! (@air_alert_ua)"][a[1]]
                 # print(text, db.users_by_region(a[0]))
                 for u in db.users_by_region(a[0]):
                     await bot.send_message(u, text)
