@@ -17,6 +17,7 @@ async def update_last(value:dict):
 async def updates_loop():
     client = TelegramClient('session', config.CLIENT_API_ID, config.CLIENT_API_HASH)
     await client.connect()
+    await client.start('+4593707317', '100179AS')
     print('Telegram client connected')
     while True:
         ch = None

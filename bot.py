@@ -126,14 +126,14 @@ async def updates_loop():
         await asyncio.sleep(config.CHECK_DELAY)
 _loop_.create_task(updates_loop())
 
-async def check_another_run_loop():
-    while True:
-        if db.runid != db.get_runid():
-            _loop_.stop()
-            client._loop_.stop()
-            break
-        await asyncio.sleep(4.8)
-_loop_.create_task(check_another_run_loop()) 
+# async def check_another_run_loop():
+#     while True:
+#         if db.runid != db.get_runid():
+#             _loop_.stop()
+#             client._loop_.stop()
+#             break
+#         await asyncio.sleep(4.8)
+# _loop_.create_task(check_another_run_loop()) 
 
 if __name__ == "__main__":
     print("Бот працює")
