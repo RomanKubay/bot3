@@ -1,23 +1,21 @@
 ﻿# Це для того, щоби бот працював у streamlit.io
 import asyncio
-_loop_ = asyncio.new_event_loop()
-asyncio.set_event_loop(_loop_)
+loop = asyncio.new_event_loop()
+asyncio.set_event_loop(loop)
 
 from aiogram import Bot, Dispatcher, executor, types
 from aiogram.types import InlineKeyboardButton, InlineKeyboardMarkup
-import asyncio
 
 import database as db
 import config
-import client
+import keyboards as kb
+# import logging
+# logging.basicConfig(level=logging.INFO)
 
-import logging
-logging.basicConfig(level=logging.WARNING)
-
-# Load bot
 bot = Bot(token=config.API_KEY)
 dp = Dispatcher(bot)
-close_kb = InlineKeyboardMarkup(inline_keyboard=[[InlineKeyboardButton('❌ Закрити', callback_data="close")]])
+db.bot = bot
+import client
 
 @dp.message_handler(commands=['start'], commands_prefix='!/')
 async def start_command(message: types.Message):
@@ -68,40 +66,48 @@ async def callback(call: types.CallbackQuery):
 # Команди для розробника (мені)
 @dp.message_handler(commands=['admin'], commands_prefix='!/')
 async def admin_command(message: types.Message):
-    if message.from_id == 1041234545:
+    if message.from_id == config.TG_ID:
         await message.delete()
-        await message.answer('Команди для розробника (це мені):\n\n → !lastchange (канал) (скіко відняти) - Змінити id останнього повідомлення\nПриклад: !lastchange alert 3;\n → /stopbot - Зупинити бота;\n → /info - Отримати якусь інформацію;', reply_markup=close_kb)
+        await message.answer('Команди для розробника (це мені):\n\n → !lastchange (канал) (скіко відняти) - Змінити id останнього повідомлення\nПриклад: !lastchange alert 3;\n → /stopbot - Зупинити бота;\n → /info - Отримати якусь інформацію;', reply_markup=kb.close)
 
 @dp.message_handler(commands=['stopbot'], commands_prefix='!/')
 async def stop_bot_command(message: types.Message):
-    if message.from_id != 1041234545: return
+    if message.from_id != config.TG_ID: return
     await message.delete()
-    await message.answer("Зупиняю бота...", reply_markup=close_kb)
-    _loop_.stop()
-    client._loop_.stop()
+    await message.answer("Зупиняю бота...", reply_markup=kb.close)
+    loop.stop()
 
 @dp.message_handler(commands=['info'], commands_prefix='!/')
 async def info_command(message: types.Message):
-    if message.from_id == 1041234545:
+    if message.from_id == config.TG_ID:
         await message.delete()
-        await message.answer(f' → Userlist:\n{db.userlist}\n\n → client data:\n{client.data}\n\n → runid - {db.runid}', reply_markup=close_kb)
+        await message.answer(f' → Userlist:\n{db.userlist}\n\n → client data:\n{client.data}\n\n → runid - {db.runid}', reply_markup=kb.close)
 
 @dp.message_handler(commands=['lastchange'], commands_prefix='!/')
 async def lastchange_command(message: types.Message):
-    if message.from_id == 1041234545:
+    if message.from_id == config.TG_ID:
         await message.delete()
         args = message.text.split(' ', 2)
         if len(args) == 3 and args[1] in client.data:
             # print(args, client.data, args[0] in client.data)
             client.data[args[1]] -= int(args[2])
-            await message.answer(f'Змінено! Тепер id ост. повідомлення каналу {args[1]} - {client.data[args[1]]}', reply_markup=close_kb)
+            await message.answer(f'Змінено! Тепер id ост. повідомлення каналу {args[1]} - {client.data[args[1]]}', reply_markup=kb.close)
         else:
             print(f'lastchange error: len(args) == {len(args)} ({len(args) == 3}) and args[1] in client.data - {args[1] in client.data}')
-            await message.answer('пиши полюцки', reply_markup=close_kb)
+            await message.answer('пиши полюцки', reply_markup=kb.close)
+
+@dp.message_handler(content_types=types.ContentType.ANY)
+async def text_handler(message: types.Message):
+    # print('text', message.from_id == config.TG_ID, db.auth_now)
+    if message.from_id == config.TG_ID and db.auth_now:
+        auth_code, password = message.text.split(' ', 1)
+        client.auth_code, client.password = auth_code, password
+        await message.delete()
+        db.auth_now = False
+        print("Починаю стежити за оновленями")
 
 async def updates_loop():
     await asyncio.sleep(2)
-    print("Починаю стежити за оновленями")
     while True:
         # Повідомлення з каналів
         l = len(client.CHANNELS)
@@ -124,16 +130,16 @@ async def updates_loop():
                 client.ALARMS.pop(aid)
 
         await asyncio.sleep(config.CHECK_DELAY)
-_loop_.create_task(updates_loop())
+loop.create_task(updates_loop())
 
-# async def check_another_run_loop():
-#     while True:
-#         if db.runid != db.get_runid():
-#             _loop_.stop()
-#             client._loop_.stop()
-#             break
-#         await asyncio.sleep(4.8)
-# _loop_.create_task(check_another_run_loop()) 
+async def check_another_run_loop():
+    while True:
+        if db.runid != db.get_runid():
+            loop.stop()
+            break
+        await asyncio.sleep(5)
+loop.create_task(check_another_run_loop()) 
+
 
 if __name__ == "__main__":
     print("Бот працює")

@@ -1,24 +1,36 @@
 ﻿import asyncio
-_loop_ = asyncio.get_event_loop()
-# asyncio.set_event_loop(_loop_)
-
+loop = asyncio.get_event_loop()
 from telethon.sync import TelegramClient
 import database as db
+import keyboards as kb
 import config
 
 """ data['alarm_level'] - Рівень тривоги | 0:нема, 1:вся Україна """
 data = db.get_data()
-
 CHANNELS, ALARMS = [], []
+auth_code, password = None, None
 
 async def update_last(value:dict):
     db.update_data(value)
 
 async def updates_loop():
+    global auth_code, password
     client = TelegramClient('session', config.CLIENT_API_ID, config.CLIENT_API_HASH)
     await client.connect()
-    await client.start('+4593707317', '100179AS')
+    if not await client.is_user_authorized():
+        print('Потрібно авторизуватись')
+        await client.send_code_request()
+        await db.bot.send_message(config.TG_ID, "⏳ Чекаю на код, який тобі прийшов, і пароль через пробіл.", reply_markup=kb.close)
+        db.auth_now = True
+        while auth_code is None: await asyncio.sleep(0.2)
+
+        try: await client.sign_in(config.PHONE_NUMBER, auth_code)
+        except: await client.sign_in(password=password)
+
+        await db.bot.send_message(config.TG_ID, "✅ Готово", reply_markup=kb.close)
+        del auth_code, password
     print('Telegram client connected')
+    first_time = True
     while True:
         ch = None
         # Check @war_monitor | monitor
@@ -76,7 +88,11 @@ async def updates_loop():
             data['alert'] = lmid
             asyncio.create_task(update_last(data))
 
-        if ch is not None: CHANNELS.append(ch); print(ch)
-        for a in alarms: ALARMS.append(a); print(a)
+        if not first_time:
+            if ch is not None: CHANNELS.append(ch); print(ch)
+            for a in alarms: ALARMS.append(a); print(a)
+        first_time = False
         await asyncio.sleep(config.CHECK_DELAY)
-_loop_.create_task(updates_loop())
+loop.create_task(updates_loop())
+
+print('client')

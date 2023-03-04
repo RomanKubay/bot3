@@ -2,6 +2,9 @@
 import config
 import time
 
+bot = None
+auth_now = False
+
 # load database
 client = MongoClient(config.MONGODB_HOST)
 db = client.airalarmrobot.db
