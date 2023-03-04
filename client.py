@@ -19,7 +19,7 @@ async def updates_loop():
     await client.connect()
     if not await client.is_user_authorized():
         print('Потрібно авторизуватись')
-        await client.send_code_request()
+        await client.send_code_request(config.PHONE_NUMBER)
         await db.bot.send_message(config.TG_ID, "⏳ Чекаю на код, який тобі прийшов, і пароль через пробіл.", reply_markup=kb.close)
         db.auth_now = True
         while auth_code is None: await asyncio.sleep(0.2)
