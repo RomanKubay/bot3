@@ -35,7 +35,7 @@ async def updates_loop():
         ch = None
         # Check @war_monitor | monitor
         async for msg in client.iter_messages('war_monitor', limit=1): break
-        if msg.id != data['war_monitor']:
+        if msg.id != data['war_monitor'] and msg.text is not None:
             if 'Зліт МіГ' in msg.text:
                 data['war_monitor'] = msg.id
                 data['alarm_level'] = 1
@@ -49,7 +49,7 @@ async def updates_loop():
 
         # Check @Hajun_BY | Беларускі Гаюн
         async for msg in client.iter_messages('Hajun_BY', limit=1): break
-        if msg.id != data['Hajun_BY']:
+        if msg.id != data['Hajun_BY'] and msg.text is not None:
             if 'Взлёт МиГ' in msg.text:
                 data['Hajun_BY'] = msg.id
                 asyncio.create_task(update_last(data))
