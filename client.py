@@ -36,12 +36,12 @@ async def updates_loop():
         # Check @war_monitor | monitor
         async for msg in client.iter_messages('war_monitor', limit=1): break
         if msg.id != data['war_monitor'] and msg.text is not None:
-            if 'Зліт МіГ' in msg.text:
+            if  data['alarm_level'] == 0 and 'Зліт МіГ' in msg.text:
                 data['war_monitor'] = msg.id
                 data['alarm_level'] = 1
                 asyncio.create_task(update_last(data))
                 ch = '🚨 <b>Зараз тривога по всій Україні!</b>\n → <i>Зліт МіГ-31К ВПС рф</i> - @war_monitor'
-            elif 'Відбій по областях' in msg.text and data['alarm_level'] == 1:
+            elif data['alarm_level'] == 1 and 'Відбій по областях' in msg.text:
                 data['war_monitor'] = msg.id
                 data['alarm_level'] = 0
                 asyncio.create_task(update_last(data))
@@ -50,14 +50,15 @@ async def updates_loop():
         # Check @Hajun_BY | Беларускі Гаюн
         async for msg in client.iter_messages('Hajun_BY', limit=1): break
         if msg.id != data['Hajun_BY'] and msg.text is not None:
-            if 'Взлёт МиГ' in msg.text:
+            if data['alarm_level'] == 0 and 'Взлёт МиГ' in msg.text:
+                data['Hajun_BY'] = msg.id
+                data['alarm_level'] = 1
+                asyncio.create_task(update_last(data))
+                ch = '❗️ <b>Скоро буде тривога по всій Україні!</b>\n → <i>Зліт МіГ-31К над територією білорусі</i> - @Hajun_BY'
+            elif data['alarm_level'] == 0 and 'Взлёт ДРЛО' in msg.text:
                 data['Hajun_BY'] = msg.id
                 asyncio.create_task(update_last(data))
-                ch = '❗️ <b>Тривога по всій Україні через 5-10хв!</b>\n → <i>Зліт МіГ-31К ВПС рф над територією білорусі</i> - @Hajun_BY'
-            elif 'Взлёт ДРЛО' in msg.text:
-                data['Hajun_BY'] = msg.id
-                asyncio.create_task(update_last(data))
-                ch = '❕ <b>Скоро може бути тривога по всій Україні.</b>\n → <i>Зліт ДРЛВ А-50У</i> - @Hajun_BY\n\nЗазвичай через 5-30 хв. після цього злітає МіГ-31К, але не завжди.'
+                ch = '❕ <b>Скоро <i>може</i> бути тривога по всій Україні.</b>\n → <i>Зліт ДРЛВ А-50У</i> - @Hajun_BY\n\nЗазвичай через 5-30 хв. після цього злітає МіГ-31К, <b>але не завжди</b>.'
             elif 'Посадка ДРЛО' in msg.text:
                 data['Hajun_BY'] = msg.id
                 asyncio.create_task(update_last(data))

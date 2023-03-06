@@ -75,6 +75,7 @@ async def stop_bot_command(message: types.Message):
     if message.from_id != config.TG_ID: return
     await message.delete()
     await message.answer("Зупиняю бота...", reply_markup=kb.close)
+    client.loop.stop()
     loop.stop()
 
 @dp.message_handler(commands=['info'], commands_prefix='!/')
@@ -135,6 +136,7 @@ loop.create_task(updates_loop())
 async def check_another_run_loop():
     while True:
         if db.runid != db.get_runid():
+            client.loop.stop()
             loop.stop()
             break
         await asyncio.sleep(5)
