@@ -5,6 +5,7 @@ asyncio.set_event_loop(loop)
 
 from aiogram import Bot, Dispatcher, executor, types
 from aiogram.types import InlineKeyboardButton, InlineKeyboardMarkup
+import sys
 
 import database as db
 import config
@@ -75,8 +76,7 @@ async def stop_bot_command(message: types.Message):
     if message.from_id != config.TG_ID: return
     await message.delete()
     await message.answer("Зупиняю бота...", reply_markup=kb.close)
-    client.loop.stop()
-    loop.stop()
+    sys.exit(0)
 
 @dp.message_handler(commands=['info'], commands_prefix='!/')
 async def info_command(message: types.Message):
@@ -136,9 +136,7 @@ loop.create_task(updates_loop())
 async def check_another_run_loop():
     while True:
         if db.runid != db.get_runid():
-            client.loop.stop()
-            loop.stop()
-            break
+            sys.exit(0)
         await asyncio.sleep(5)
 loop.create_task(check_another_run_loop()) 
 
