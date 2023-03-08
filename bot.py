@@ -53,6 +53,9 @@ async def callback(call: types.CallbackQuery):
     query = call.data.split("_")
     match query[0]:
         case 'close': await call.message.delete()
+        case 'stop':
+            await call.message.delete()
+            sys.exit(0)
         case 'new':
             if db.get_user_i(call.from_user.id) is not None: return
             db.new_user(call.from_user.id, int(query[1]))
@@ -75,8 +78,7 @@ async def admin_command(message: types.Message):
 async def stop_bot_command(message: types.Message):
     if message.from_id != config.TG_ID: return
     await message.delete()
-    await message.answer("Зупиняю бота...", reply_markup=kb.close)
-    sys.exit(0)
+    await message.answer("Ви справді бажаєте, щоб я завершив свою роботу?", reply_markup=kb.stop_bot)
 
 @dp.message_handler(commands=['info'], commands_prefix='!/')
 async def info_command(message: types.Message):
