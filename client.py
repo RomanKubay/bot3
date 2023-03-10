@@ -35,14 +35,13 @@ async def updates_loop():
         ch = None
         # Check @war_monitor | monitor
         async for msg in client.iter_messages('war_monitor', limit=1): break
-        if msg.id != data['war_monitor'] and msg.text is not None:
+        if msg.id != data['war_monitor']:
+            data['war_monitor'] = msg.id
             if  data['alarm_level'] == 0 and 'Зліт МіГ' in msg.text:
-                data['war_monitor'] = msg.id
                 data['alarm_level'] = 1
                 asyncio.create_task(update_last(data))
                 ch = '🚨 <b>Зараз тривога по всій Україні!</b>\n → <i>Зліт МіГ-31К ВПС рф</i> - @war_monitor'
             elif data['alarm_level'] == 1 and 'Відбій по областях' in msg.text:
-                data['war_monitor'] = msg.id
                 data['alarm_level'] = 0
                 asyncio.create_task(update_last(data))
                 ch = '❕ <b>Відбій тривоги по областях</b> - @war_monitor'
